@@ -9,12 +9,13 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+
 	"github.com/v2fly/v2ray-core/v4/common/errors"
 	"github.com/v2fly/v2ray-core/v4/common/platform"
 	"github.com/v2fly/v2ray-core/v4/common/protocol"
-	"github.com/v2fly/v2ray-core/v4/main/confloader"
 	"github.com/v2fly/v2ray-core/v4/infra/conf"
 	json_reader "github.com/v2fly/v2ray-core/v4/infra/conf/json"
+	"github.com/v2fly/v2ray-core/v4/main/confloader"
 )
 
 var (
@@ -60,8 +61,8 @@ type Config struct {
 	MySQL              *MySQLConfig `json:"mysql"`
 	UserConfig         *UserConfig  `json:"user"`
 	IgnoreEmptyVmessID bool         `json:"ignoreEmptyVmessID"`
-	NodeClass 		   string       `json:"NodeClass"`
-	v2rayConfig        *conf.Config
+	// NodeClass 		   string       `json:"NodeClass"`
+	v2rayConfig *conf.Config
 }
 
 func getConfig() (*Config, error) {

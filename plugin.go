@@ -2,10 +2,11 @@ package ssrpanel
 
 import (
 	"fmt"
-	"google.golang.org/grpc/status"
 	"os"
 	"time"
+
 	"github.com/v2fly/v2ray-core/v4/common/errors"
+	"google.golang.org/grpc/status"
 )
 
 func init() {
@@ -14,7 +15,7 @@ func init() {
 		if err != nil {
 			fatal(err)
 		}
-		newError("v0.4.0 started").AtWarning().WriteToLog()
+		newError("v4.44.0 started").AtWarning().WriteToLog()
 	}()
 }
 

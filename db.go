@@ -76,7 +76,7 @@ type NodeInfo struct {
 }
 
 func (*NodeInfo) TableName() string {
-	return "ss_node_info_log"
+	return "ss_node_info"
 }
 
 func (l *NodeInfo) BeforeCreate(scope *gorm.Scope) error {
@@ -85,8 +85,10 @@ func (l *NodeInfo) BeforeCreate(scope *gorm.Scope) error {
 }
 
 type Node struct {
-	ID          uint `gorm:"primary_key"`
-	TrafficRate float64
+	ID          uint    `gorm:"primary_key"`
+	TrafficRate float64 `gorm:"traffic_rate"`
+	NodeClass   int     `gorm:"column:node_class"`
+	NodeGroup   int     `gorm:"column:node_group"`
 }
 
 func (*Node) TableName() string {
@@ -98,9 +100,11 @@ type DB struct {
 	RetryTimes int64
 }
 
-func (db *DB) GetAllUsers(nodeClass string) ([]UserModel, error) {
+func (db *DB) GetAllUsers(nodeID uint) ([]UserModel, error) {
 	users := make([]UserModel, 0)
-	err := db.DB.Select("id, v2ray_uuid, email, port").Where("enable = 1 AND u + d < transfer_enable AND plan >= ?", nodeClass).Find(&users).Error
+	// cfg, _ := getConfig()
+	node, _ := db.GetNode(nodeID)
+	err := db.DB.Select("id, v2ray_uuid, email, port").Where("enable = 1 AND u + d < transfer_enable AND class >= ? AND node_group = ?", node.NodeClass, node.NodeGroup).Find(&users).Error
 	return users, err
 }
 

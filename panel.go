@@ -1,16 +1,17 @@
 package ssrpanel
 
 import (
-	"code.cloudfoundry.org/bytefmt"
 	"fmt"
+	"time"
+
+	"code.cloudfoundry.org/bytefmt"
 	"github.com/jinzhu/gorm"
 	"github.com/robfig/cron"
 	"github.com/shirou/gopsutil/load"
-	"google.golang.org/grpc"
-	"time"
 	"github.com/v2fly/v2ray-core/v4/common/protocol"
 	"github.com/v2fly/v2ray-core/v4/common/serial"
 	"github.com/v2fly/v2ray-core/v4/proxy/vmess"
+	"google.golang.org/grpc"
 )
 
 type Panel struct {
@@ -174,7 +175,7 @@ func (p *Panel) mulTrafficRate(traffic uint64) uint64 {
 }
 
 func (p *Panel) syncUser() (addedUserCount, deletedUserCount int, err error) {
-	userModels, err := p.db.GetAllUsers(p.Config.NodeClass)
+	userModels, err := p.db.GetAllUsers(p.NodeID)
 	if err != nil {
 		return 0, 0, err
 	}
