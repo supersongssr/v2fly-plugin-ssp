@@ -10,6 +10,7 @@ import (
 	"github.com/shirou/gopsutil/load"
 	"github.com/v2fly/v2ray-core/v4/common/protocol"
 	"github.com/v2fly/v2ray-core/v4/common/serial"
+	"github.com/v2fly/v2ray-core/v4/proxy/vless"
 	"github.com/v2fly/v2ray-core/v4/proxy/vmess"
 	"google.golang.org/grpc"
 )
@@ -234,14 +235,25 @@ func (p *Panel) syncUser() (addedUserCount, deletedUserCount int, err error) {
 
 func (p *Panel) convertUser(userModel UserModel) *protocol.User {
 	userCfg := p.UserConfig
-	return &protocol.User{
-		Level: userCfg.Level,
-		Email: userModel.Email,
-		Account: serial.ToTypedMessage(&vmess.Account{
-			Id:               userModel.VmessID,
-			AlterId:          userCfg.AlterID,
-			SecuritySettings: userCfg.securityConfig,
-		}),
+	inbound := getInboundConfigByTag(p.UserConfig.InboundTag, p.v2rayConfig.InboundConfigs)
+	if inbound.Protocol == "vless" {
+		return &protocol.User{
+			Level: userCfg.Level,
+			Email: userModel.Email,
+			Account: serial.ToTypedMessage(&vless.Account{
+				Id: userModel.VmessID,
+			}),
+		}
+	} else {
+		return &protocol.User{
+			Level: userCfg.Level,
+			Email: userModel.Email,
+			Account: serial.ToTypedMessage(&vmess.Account{
+				Id:               userModel.VmessID,
+				AlterId:          userCfg.AlterID,
+				SecuritySettings: userCfg.securityConfig,
+			}),
+		}
 	}
 }
 
