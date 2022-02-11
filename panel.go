@@ -10,6 +10,7 @@ import (
 	"github.com/shirou/gopsutil/load"
 	"github.com/v2fly/v2ray-core/v4/common/protocol"
 	"github.com/v2fly/v2ray-core/v4/common/serial"
+	"github.com/v2fly/v2ray-core/v4/proxy/trojan"
 	"github.com/v2fly/v2ray-core/v4/proxy/vless"
 	"github.com/v2fly/v2ray-core/v4/proxy/vmess"
 	"google.golang.org/grpc"
@@ -242,6 +243,14 @@ func (p *Panel) convertUser(userModel UserModel) *protocol.User {
 			Email: userModel.Email,
 			Account: serial.ToTypedMessage(&vless.Account{
 				Id: userModel.VmessID,
+			}),
+		}
+	} else if inbound.Protocol == "trojan" {
+		return &protocol.User{
+			Level: userCfg.Level,
+			Email: userModel.Email,
+			Account: serial.ToTypedMessage(&trojan.Account{
+				Password: userModel.VmessID,
 			}),
 		}
 	} else {
