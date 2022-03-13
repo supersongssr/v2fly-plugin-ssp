@@ -14,14 +14,27 @@
   "inbounds": [
     {
       "port": 10086,
-      "protocol": "vless",
+      "protocol": "vmess",
       "settings": {
         "decryption":"none"
       },
       "streamSettings": {
-        "network": "ws",
-        "wsSettings": {
+        "network": "h2",
+        "httpSettings": {
+            "host": [
+              "ipv4.abc.xyz",
+              "ipv6.abc.xyz"
+            ],
         "path": "nodePath_nodePath"
+        },
+        "security": "tls",
+        "tlsSettings": {
+          "certificates": [
+            {
+              "certificateFile": "/etc/ssl/nodeTlsPem_nodeTlsPem",
+              "keyFile": "/etc/ssl/nodeTlsKey_nodeTlsKey"
+            }
+          ]
         }
       },
       "sniffing":{

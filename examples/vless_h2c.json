@@ -19,10 +19,15 @@
         "decryption":"none"
       },
       "streamSettings": {
-        "network": "ws",
-        "wsSettings": {
+        "network": "h2",
+        "httpSettings": {
+            "host": [
+              "ipv4.abc.xyz",
+              "ipv6.abc.xyz"
+            ],
         "path": "nodePath_nodePath"
-        }
+        },
+        "security": "none"
       },
       "sniffing":{
         "enabled": true,

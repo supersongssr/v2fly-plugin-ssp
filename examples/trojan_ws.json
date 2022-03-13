@@ -24,6 +24,13 @@
         "path": "nodePath_nodePath"
         }
       },
+      "sniffing":{
+        "enabled": true,
+        "destOverride": [
+          "http",
+          "tls"
+        ]
+      },
       "tag": "proxy"
     },
     {
@@ -39,10 +46,44 @@
   "outbounds": [
     {
       "protocol": "freedom"
+    },
+    {
+        "protocol": "blackhole",
+        "settings": {},
+        "tag": "block"
     }
   ],
   "routing": {
+    "domainMatcher": "mph",
     "rules": [
+      {
+        "type": "field",
+        "outboundTag": "block",
+        "domain": [
+          "geosite:epochmediagroup",
+          "getsite:category-ads-all",
+          "geosite:category-bank-cn",
+          "geosite:ookla-speedtest",
+          "geosite:qihoo360",
+          "geosite:xunlei",
+          "geosite:speedtest",
+          "domain:ntdtv-dc.com",
+					"domain:ntdtv.com.tw",
+					"domain:minghui.org",
+					"domain:renminbao.com",
+					"domain:dafahao.com",
+					"domain:dongtaiwang.com",
+					"domain:falundafa.org",
+					"domain:wujieliulan.com",
+					"domain:ninecommentaries.com",
+					"domain:shenyun.com"
+        ]
+      },
+      {
+        "type": "field",
+        "outboundTag": "block",
+        "protocol": ["bittorrent"]
+      },
       {
         "type": "field",
         "inboundTag": [
