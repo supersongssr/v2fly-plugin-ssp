@@ -1,6 +1,7 @@
 package ssrpanel
 
 import (
+	"context"
 	"fmt"
 	"time"
 
@@ -14,6 +15,9 @@ import (
 	"github.com/v2fly/v2ray-core/v4/proxy/vless"
 	"github.com/v2fly/v2ray-core/v4/proxy/vmess"
 	"google.golang.org/grpc"
+
+	//song
+	"github.com/v2fly/v2ray-core/v4/common/session" //song
 )
 
 type Panel struct {
@@ -150,6 +154,16 @@ func (p *Panel) getTraffic() (logs []userStatsLogs, err error) {
 		if err != nil {
 			return
 		}
+
+		// try to get the current user ip, and print it . IP() is a slices, []byte ; song
+		var currentUserIps []byte
+		var currentUserEmail string
+		sessionInbound := session.InboundFromContext(context.Background())
+		currentUserIps = sessionInbound.Source.Address.IP()
+		fmt.Printf("User ips is %v ,len is %d ,", currentUserIps, len(currentUserIps)) //print user ips data ,and lenth ,;song
+		currentUserEmail = sessionInbound.User.Email                                   //song:try get current user mail ,by session ,
+		// if cannot get email , means ,context.Background doesnt work
+		fmt.Printf("User email is : %d", currentUserEmail)
 
 		if uplink+downlink > 0 {
 			if err != nil {
