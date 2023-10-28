@@ -1,7 +1,6 @@
 package ssrpanel
 
 import (
-	"context"
 	"fmt"
 	"time"
 
@@ -15,9 +14,8 @@ import (
 	"github.com/v2fly/v2ray-core/v4/proxy/vless"
 	"github.com/v2fly/v2ray-core/v4/proxy/vmess"
 	"google.golang.org/grpc"
-
 	//song
-	"github.com/v2fly/v2ray-core/v4/common/session" //song
+	//song
 )
 
 type Panel struct {
@@ -144,7 +142,20 @@ type userStatsLogs struct {
 
 func (p *Panel) getTraffic() (logs []userStatsLogs, err error) {
 	var downlink, uplink uint64
+	//song
+	var uIPs int64
+	var uIPStr string
+	//
 	for _, user := range p.userModels {
+		// song getip
+		uIPs, uIPStr, err = p.statsServiceClient.getUserIP(user.Email)
+		if err != nil {
+			newErrorf("------------ have not get user ip %s", user.Email).AtDebug().WriteToLog()
+		}
+		newErrorf("------------ User email  %s", user.Email).AtDebug().WriteToLog()
+		newErrorf("============= User ips : %d", uIPs).AtDebug().WriteToLog()
+		newErrorf("============= User ip is  : %s", uIPStr).AtDebug().WriteToLog()
+		//
 		downlink, err = p.statsServiceClient.getUserDownlink(user.Email)
 		if err != nil {
 			return
@@ -155,15 +166,17 @@ func (p *Panel) getTraffic() (logs []userStatsLogs, err error) {
 			return
 		}
 
-		// try to get the current user ip, and print it . IP() is a slices, []byte ; song
-		var currentUserIps []byte
-		var currentUserEmail string
-		sessionInbound := session.InboundFromContext(context.Background())
-		currentUserIps = sessionInbound.Source.Address.IP()
-		fmt.Printf("User ips is %v ,len is %d ,", currentUserIps, len(currentUserIps)) //print user ips data ,and lenth ,;song
-		currentUserEmail = sessionInbound.User.Email                                   //song:try get current user mail ,by session ,
-		// if cannot get email , means ,context.Background doesnt work
-		fmt.Printf("User email is : %d", currentUserEmail)
+		// // try to get the current user ip, and print it . IP() is a slices, []byte ; song
+		// var currentUserIps []byte
+		// var currentUserEmail string
+		// sessionInbound := session.InboundFromContext(context.Background())
+		// currentUserIps = sessionInbound.Source.Address.IP()
+		// fmt.Printf("User ips is %v ,len is %d ,", currentUserIps, len(currentUserIps)) //print user ips data ,and lenth ,;song
+		// newErrorf("===================== ======================= User ips is %v ,len is %d ", currentUserIps, len(currentUserIps)).AtError().WriteToLog()
+		// currentUserEmail = sessionInbound.User.Email //song:try get current user mail ,by session ,
+		// // if cannot get email , means ,context.Background doesnt work
+		// fmt.Printf("User email is : %d", currentUserEmail)
+		// newErrorf("===================== ======================= User email is : %d ", currentUserEmail).AtError().WriteToLog()
 
 		if uplink+downlink > 0 {
 			if err != nil {
