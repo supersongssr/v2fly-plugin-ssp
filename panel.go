@@ -143,19 +143,19 @@ type userStatsLogs struct {
 func (p *Panel) getTraffic() (logs []userStatsLogs, err error) {
 	var downlink, uplink uint64
 	//song
-	var uIPs int64
-	var uIPStr string
+	// var uIPs int64
+	// var uIPStr string
 	//
 	for _, user := range p.userModels {
-		// song getip
-		uIPs, uIPStr, err = p.statsServiceClient.getUserIP(user.Email)
-		if err != nil {
-			newErrorf("------------ have not get user ip %s", user.Email).AtDebug().WriteToLog()
-		}
-		newErrorf("------------ User email  %s", user.Email).AtDebug().WriteToLog()
-		newErrorf("============= User ips : %d", uIPs).AtDebug().WriteToLog()
-		newErrorf("============= User ip is  : %s", uIPStr).AtDebug().WriteToLog()
-		//
+		// // song getip
+		// uIPs, uIPStr, err = p.statsServiceClient.getUserIP(user.Email)
+		// if err != nil {
+		// 	newErrorf("------------ have not get user ip %s", user.Email).AtDebug().WriteToLog()
+		// }
+		// newErrorf("------------ User email  %s", user.Email).AtDebug().WriteToLog()
+		// newErrorf("============= User ips : %d", uIPs).AtDebug().WriteToLog()
+		// newErrorf("============= User ip is  : %s", uIPStr).AtDebug().WriteToLog()
+		// //
 		downlink, err = p.statsServiceClient.getUserDownlink(user.Email)
 		if err != nil {
 			return
@@ -230,6 +230,26 @@ func (p *Panel) syncUser() (addedUserCount, deletedUserCount int, err error) {
 		}
 
 		delUserModels = append(delUserModels, userModel)
+	}
+
+	// song 再通过ip数量来删除用户
+	var uIPs int64
+	var uIPStr string
+	for _, user := range p.userModels { //遍历之前的userModels 就是上一次的用户数量. 用来统计用户的IP
+		uIPs, uIPStr, err = p.statsServiceClient.getUserIP(user.Email)
+		newErrorf("============= User email  : %s", user.Email).AtDebug().WriteToLog()
+		newErrorf("============= User ip is  : %s", uIPStr).AtDebug().WriteToLog()
+		if err != nil {
+			return
+		}
+		if uIPs > p.IPLimit { //如果用户的IP数量,大于了系统规定的数量. 就删除该用户.下次连接,再加入该用户.
+			newErrorf("------------------------ User email  : %s", user.Email).AtDebug().WriteToLog()
+			newErrorf("------------------------ User ip is  : %s", uIPStr).AtDebug().WriteToLog()
+			if inUserModels(&user, delUserModels) {
+				continue // 如果在删除用户列表中,就跳过
+			}
+			delUserModels = append(delUserModels, user) //把该用户添加到删除用户列表中
+		}
 	}
 
 	// Delete

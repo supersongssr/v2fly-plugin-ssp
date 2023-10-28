@@ -15,7 +15,7 @@ func init() {
 		if err != nil {
 			fatal(err)
 		}
-		newError("v4.44.0 started").AtWarning().WriteToLog()
+		newError("v4.45.2 v2fly started").AtWarning().WriteToLog()
 	}()
 }
 
